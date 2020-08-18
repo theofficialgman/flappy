@@ -45,9 +45,11 @@
 #pragma endregion DATASTRUCTURES
 
 #pragma region GLOBALS
-int ww = WW;
-int wh = WH;
-
+int ww= WW;
+int wh= WH;
+int scale=1;
+int w;
+int h;
 int game_state;
 enum game_state
 {
@@ -71,6 +73,8 @@ double vx = 200;
 double gy = 800;
 
 Uint32 FPS = 60;
+
+SDL_Rect size;
 
 // Pipes
 SDL_Rect pipe_src;				// need one source rectangle for the pipes
@@ -139,15 +143,6 @@ SDL_Rect medal_dst;
 SDL_Event event;
 SDL_Point mouse;
 SDL_Joystick *joystick;
-SDL_JoystickEventState(SDL_ENABLE);
-if (SDL_NumJoysticks() > 1) joystick = SDL_JoystickOpen(SDL_NumJoysticks()-1);
-else joystick = SDL_JoystickOpen(0);
-printf("ready\n");
-printf("%i joysticks detected \n", SDL_NumJoysticks());
-printf("%i buttons.\n\n", SDL_JoystickNumButtons(joystick));
-printf("%i hats. \n", SDL_JoystickNumHats(joystick));
-printf("%i axis. \n", SDL_JoystickNumAxes(joystick));
-if (SDL_JoystickNumHats(joystick) > 0) hat=1;
 #pragma endregion
 
 #pragma endregion GLOBALS
@@ -211,11 +206,32 @@ int main(int argc, char *argv[])
 	paused_set();
 	game_over_set();
 	read_highscore();
+	int hat=0;
+	SDL_JoystickEventState(SDL_ENABLE);
+if (SDL_NumJoysticks() > 1) joystick = SDL_JoystickOpen(SDL_NumJoysticks()-1);
+else joystick = SDL_JoystickOpen(0);
+printf("ready\n");
+printf("%i joysticks detected \n", SDL_NumJoysticks());
+printf("%i buttons.\n\n", SDL_JoystickNumButtons(joystick));
+printf("%i hats. \n", SDL_JoystickNumHats(joystick));
+printf("%i axis. \n", SDL_JoystickNumAxes(joystick));
+if (SDL_JoystickNumHats(joystick) > 0) hat=1;
+
 #pragma region WINDOW
 	SDL_SetWindowPosition(Window, 0, 0);
 	SDL_SetWindowSize(Window, ww, wh);
 	SDL_SetWindowTitle(Window, "5c - Sounds");
 	SDL_ShowWindow(Window);
+	SDL_GetRendererOutputSize(Renderer, &w, &h);
+	if (w >= 1920) scale=2;
+	printf("%d",w);
+	size.x =w/2/scale - ww/2;
+	size.y=h/2/scale - wh/2;
+	size.h=wh;
+	size.w=ww;
+	SDL_RenderSetScale(Renderer, scale,scale);
+
+	SDL_RenderSetViewport(Renderer, &size);
 #pragma endregion WINDOW
 
 	SDL_SetRenderDrawColor(Renderer, WHITE);
@@ -285,7 +301,7 @@ void assets_in(void)
 }
 
 void idle_set(void)
-{
+{	
 	// Select BG
 	int bg = rand() % 2;
 	if (bg)
@@ -390,16 +406,37 @@ void idle_set(void)
 
 void idle_update(void)
 {
-	//SDL_GetMouseState(&mouse.x, &mouse.y);
+	SDL_GetMouseState(&mouse.x, &mouse.y);
+	mouse.y=(mouse.y-(h-wh*scale)/2)/scale;
+	mouse.x=(mouse.x-(w-ww*scale)/2)/scale;
 	while (SDL_PollEvent(&event))
 	{
 		if (event.type == SDL_QUIT)
 		{
 			running = 0;
 		}
+		if (event.type == SDL_MOUSEBUTTONDOWN)
+		{
+			if (event.button.button == SDL_BUTTON_LEFT)
+			{ 
+				if (SDL_PointInRect(&mouse, &play_dst))
+				{
+					intro_set();
+					game_state = GS_INTRO;
+				}
+			}
+		}
+		if (event.type == SDL_MOUSEBUTTONDOWN)
+		{
+			if (event.button.button == SDL_BUTTON_RIGHT)
+			{
+				running = 0;
+			}
+		}
+
 		if (event.type == SDL_JOYBUTTONDOWN)
 		{
-			if (event.button.button == 16)
+			if (event.jbutton.button == 1)
 			{
 				//if (SDL_PointInRect(&mouse, &play_dst))
 				//{
@@ -408,9 +445,9 @@ void idle_update(void)
 				//}
 			}
 		}
-		if (event.type == JOYBUTTONDOWN)
+		if (event.type == SDL_JOYBUTTONDOWN)
 		{
-			if (event.button.button == 11)
+			if (event.jbutton.button == 11)
 			{
 				running = 0;
 			}
@@ -496,6 +533,8 @@ void intro_set(void)
 void intro_update(void)
 {
 	SDL_GetMouseState(&mouse.x, &mouse.y);
+	mouse.y=(mouse.y-(h-wh*scale)/2)/scale;
+	mouse.x=(mouse.x-(w-ww*scale)/2)/scale;
 	while (SDL_PollEvent(&event))
 	{
 		if (event.type == SDL_QUIT)
@@ -514,6 +553,23 @@ void intro_update(void)
 		if (event.type == SDL_MOUSEBUTTONDOWN)
 		{
 			if (event.button.button == SDL_BUTTON_RIGHT)
+			{
+				running = 0;
+			}
+		}
+
+		if (event.type == SDL_JOYBUTTONDOWN)
+		{
+			if (event.jbutton.button == 1)
+			{
+				Mix_PlayChannel(-1, flap_chunk, 0);
+				playing_set();
+				game_state = GS_PLAYING;
+			}
+		}
+		if (event.type == SDL_JOYBUTTONDOWN)
+		{
+			if (event.button.button == 11)
 			{
 				running = 0;
 			}
@@ -588,6 +644,8 @@ void playing_set(void)
 void playing_update(void)
 {
 	SDL_GetMouseState(&mouse.x, &mouse.y);
+	mouse.y=(mouse.y-(h-wh*scale)/2)/scale;
+	mouse.x=(mouse.x-(w-ww*scale)/2)/scale;
 	while (SDL_PollEvent(&event))
 	{
 		if (event.type == SDL_QUIT)
@@ -623,6 +681,31 @@ void playing_update(void)
 				running = 0;
 				break;
 			case SDLK_p:
+				game_state = GS_PAUSED;
+				break;
+			case SDLK_g:
+			case SDLK_r:
+				idle_set();
+				intro_set();
+				playing_set();
+				game_state = GS_IDLE;
+				break;
+			default:
+				break;
+			}
+		}
+		if (event.type == SDL_JOYBUTTONDOWN)
+		{
+			switch (event.jbutton.button)
+			{
+			case 1:
+				vy = -240;
+				Mix_PlayChannel(-1, flap_chunk, 0);
+				break;
+			case 11:
+				running = 0;
+				break;
+			case 10:
 				game_state = GS_PAUSED;
 				break;
 			case SDLK_g:
@@ -687,6 +770,8 @@ void paused_set(void)
 void paused_update(void)
 {
 	SDL_GetMouseState(&mouse.x, &mouse.y);
+	mouse.y=(mouse.y-(h-wh*scale)/2)/scale;
+	mouse.x=(mouse.x-(w-ww*scale)/2)/scale;
 	while (SDL_PollEvent(&event))
 	{
 		if (event.type == SDL_QUIT)
@@ -712,6 +797,26 @@ void paused_update(void)
 				running = 0;
 				break;
 			case SDLK_SPACE:
+				game_state = GS_PLAYING;
+				break;
+			case SDLK_g:
+			case SDLK_r:
+				idle_set();
+				intro_set();
+				game_state = GS_IDLE;
+				break;
+			default:
+				break;
+			}
+		}
+		if (event.type == SDL_JOYBUTTONDOWN)
+		{
+			switch (event.jbutton.button)
+			{
+			case 11:
+				running = 0;
+				break;
+			case 1:
 				game_state = GS_PLAYING;
 				break;
 			case SDLK_g:
@@ -848,6 +953,8 @@ void game_over_set(void)
 void game_over_Update(void)
 {
 	SDL_GetMouseState(&mouse.x, &mouse.y);
+	mouse.y=(mouse.y-(h-wh*scale)/2)/scale;
+	mouse.x=(mouse.x-(w-ww*scale)/2)/scale;
 	while (SDL_PollEvent(&event))
 	{
 		if (event.type == SDL_QUIT)
@@ -868,6 +975,24 @@ void game_over_Update(void)
 		if (event.type == SDL_MOUSEBUTTONDOWN)
 		{
 			if (event.button.button == SDL_BUTTON_RIGHT)
+			{
+				running = 0;
+			}
+		}
+		if (event.type == SDL_JOYBUTTONDOWN)
+		{
+			if (event.jbutton.button == 1)
+			{
+				// if (SDL_PointInRect(&mouse, &play_dst))
+				// {
+				 	idle_set();
+				 	game_state = GS_IDLE;
+				// }
+			}
+		}
+		if (event.type == SDL_JOYBUTTONDOWN)
+		{
+			if (event.jbutton.button == 11)
 			{
 				running = 0;
 			}
