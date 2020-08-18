@@ -7,7 +7,7 @@ void init(void)
 {
 
   SDL_Init(SDL_INIT_EVERYTHING);
-  Window = SDL_CreateWindow("", 0, 0, 0, 0, SDL_WINDOW_HIDDEN);
+  Window = SDL_CreateWindow("", 0, 0, 0, 0, SDL_WINDOW_FULLSCREEN_DESKTOP);
 
 #pragma region ICON
   SDL_Surface *icon;
