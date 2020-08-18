@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Exec=/usr/share/flappy/Builds/Linux/5c_1
+Path=/usr/share/flappy
+Name=Flappy-Bird
+Comment=flappy
+Icon=/usr/share/flappy/assets/gfx/icon.png
+Categories=Game
