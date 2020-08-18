@@ -223,14 +223,15 @@ if (SDL_JoystickNumHats(joystick) > 0) hat=1;
 	SDL_SetWindowTitle(Window, "5c - Sounds");
 	SDL_ShowWindow(Window);
 	SDL_GetRendererOutputSize(Renderer, &w, &h);
-	if (w >= 1920) scale=2;
+	if (h >= 1440) scale=2.8;
+	else if (h>=1080) scale=2.1;
+	else scale=1.4;
 	printf("%d",w);
 	size.x =w/2/scale - ww/2;
 	size.y=h/2/scale - wh/2;
 	size.h=wh;
 	size.w=ww;
 	SDL_RenderSetScale(Renderer, scale,scale);
-
 	SDL_RenderSetViewport(Renderer, &size);
 #pragma endregion WINDOW
 
