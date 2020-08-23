@@ -208,8 +208,9 @@ int main(int argc, char *argv[])
 	read_highscore();
 	int hat=0;
 	SDL_JoystickEventState(SDL_ENABLE);
-if (SDL_NumJoysticks() > 1) joystick = SDL_JoystickOpen(SDL_NumJoysticks()-1);
-else joystick = SDL_JoystickOpen(0);
+//if (SDL_NumJoysticks() > 1) joystick = SDL_JoystickOpen(SDL_NumJoysticks()-1);
+//else joystick = SDL_JoystickOpen(0);
+joystick=SDL_JoystickOpen(0);
 printf("ready\n");
 printf("%i joysticks detected \n", SDL_NumJoysticks());
 printf("%i buttons.\n\n", SDL_JoystickNumButtons(joystick));
