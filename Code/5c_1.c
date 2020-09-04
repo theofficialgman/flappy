@@ -208,15 +208,15 @@ int main(int argc, char *argv[])
 	read_highscore();
 	int hat=0;
 	SDL_JoystickEventState(SDL_ENABLE);
-//if (SDL_NumJoysticks() > 1) joystick = SDL_JoystickOpen(SDL_NumJoysticks()-1);
-//else joystick = SDL_JoystickOpen(0);
-joystick=SDL_JoystickOpen(0);
-printf("ready\n");
-printf("%i joysticks detected \n", SDL_NumJoysticks());
-printf("%i buttons.\n\n", SDL_JoystickNumButtons(joystick));
-printf("%i hats. \n", SDL_JoystickNumHats(joystick));
-printf("%i axis. \n", SDL_JoystickNumAxes(joystick));
-if (SDL_JoystickNumHats(joystick) > 0) hat=1;
+	//if (SDL_NumJoysticks() > 1) joystick = SDL_JoystickOpen(SDL_NumJoysticks()-1);
+	//else joystick = SDL_JoystickOpen(0);
+	joystick=SDL_JoystickOpen(0);
+	printf("ready\n");
+	printf("%i joysticks detected \n", SDL_NumJoysticks());
+	printf("%i buttons.\n\n", SDL_JoystickNumButtons(joystick));
+	printf("%i hats. \n", SDL_JoystickNumHats(joystick));
+	printf("%i axis. \n", SDL_JoystickNumAxes(joystick));
+	if (SDL_JoystickNumHats(joystick) > 0) hat=1;
 
 #pragma region WINDOW
 	SDL_SetWindowPosition(Window, 0, 0);
@@ -227,6 +227,7 @@ if (SDL_JoystickNumHats(joystick) > 0) hat=1;
 	if (h >= 1440) scale=2.8;
 	else if (h>=1080) scale=2.1;
 	else scale=1.4;
+	printf("%d",h);
 	printf("%d",w);
 	size.x =w/2/scale - ww/2;
 	size.y=h/2/scale - wh/2;
@@ -235,14 +236,13 @@ if (SDL_JoystickNumHats(joystick) > 0) hat=1;
 	SDL_RenderSetScale(Renderer, scale,scale);
 	SDL_RenderSetViewport(Renderer, &size);
 #pragma endregion WINDOW
-
 	SDL_SetRenderDrawColor(Renderer, WHITE);
 	game_state = GS_IDLE;
 #pragma endregion INIT
 
 #pragma region MAIN LOOP
 	while (running)
-	{
+	{	SDL_RenderSetViewport(Renderer, &size);
 		game_state_check();
 		// SDL_RenderClear(Renderer);
 		SDL_RenderPresent(Renderer);
@@ -286,8 +286,7 @@ void game_state_check(void)
 }
 
 void assets_in(void)
-{
-	flap_chunk = Mix_LoadWAV("../../assets/sfx/sfx_wing.ogg"); // flapping
+{	flap_chunk = Mix_LoadWAV("../../assets/sfx/sfx_wing.ogg"); // flapping
 	Mix_VolumeChunk(flap_chunk, MIX_VOLUME - 40);
 	hit_chunk = Mix_LoadWAV("../../assets/sfx/sfx_hit.ogg"); // collide
 	Mix_VolumeChunk(hit_chunk, MIX_VOLUME);
@@ -478,8 +477,7 @@ void idle_draw(void)
 }
 
 void intro_set(void)
-{
-	// Get Ready
+{	// Get Ready
 	ready_src.w = 184;
 	ready_src.h = 50;
 	ready_src.x = 590;
