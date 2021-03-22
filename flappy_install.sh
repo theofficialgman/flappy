@@ -11,7 +11,7 @@ cd FlappyBird
 mv flappy.sh -t /$HOME/RetroPie/roms/ports
 cd
 rm -r FlappyBird
-wget https://github.com/theofficialgman/flappy/archive/master.zip
+wget -q https://github.com/theofficialgman/flappy/archive/master.zip
 unzip master.zip
 rm master.zip
 mv flappy-master flappy
