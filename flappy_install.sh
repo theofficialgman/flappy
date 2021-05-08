@@ -7,10 +7,10 @@ sudo apt install --assume-yes subversion subversion libsdl1.2-dev libsdl2-mixer-
 sudo apt install --assume-yes libsndio*
 echo
 echo "Downloading the game"
-svn export https://github.com/cobalt2727/L4T-Megascript/trunk/assets/FlappyBird
-cd FlappyBird
-mv flappy.sh -t /$HOME/RetroPie/roms/ports
-cd
+# svn export https://github.com/cobalt2727/L4T-Megascript/trunk/assets/FlappyBird
+# cd FlappyBird
+# mv flappy.sh -t /$HOME/RetroPie/roms/ports
+# cd
 rm -r FlappyBird
 wget -q https://github.com/theofficialgman/flappy/archive/master.zip
 unzip master.zip
