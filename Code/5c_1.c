@@ -47,7 +47,7 @@
 #pragma region GLOBALS
 int ww= WW;
 int wh= WH;
-int scale=1;
+double scale=1;
 int w;
 int h;
 int game_state;
@@ -224,28 +224,20 @@ int main(int argc, char *argv[])
 	SDL_SetWindowTitle(Window, "5c - Sounds");
 	SDL_ShowWindow(Window);
 	SDL_GetRendererOutputSize(Renderer, &w, &h);
-	if (h >= 1440) scale=2.8;
-	else if (h>=1080) scale=2.1;
-	else scale=1.4;
+	scale= (double) h / wh;
 	printf("%d",h);
 	printf("%d",w);
-	size.x =w/2/scale - ww/2;
-	size.y=h/2/scale - wh/2;
-	size.h=wh;
-	size.w=ww;
-	SDL_RenderSetScale(Renderer, scale,scale);
-	SDL_RenderSetViewport(Renderer, &size);
 #pragma endregion WINDOW
-	SDL_SetRenderDrawColor(Renderer, WHITE);
+	SDL_SetRenderDrawColor(Renderer, BLACK);
 	game_state = GS_IDLE;
 #pragma endregion INIT
 
 #pragma region MAIN LOOP
 	while (running)
-	{	SDL_RenderSetViewport(Renderer, &size);
-		game_state_check();
-		// SDL_RenderClear(Renderer);
+	{	game_state_check();
 		SDL_RenderPresent(Renderer);
+		SDL_GetRendererOutputSize(Renderer, &w, &h);
+		scale= (double) h / wh;
 	}
 #pragma endregion MAIN LOOP
 
